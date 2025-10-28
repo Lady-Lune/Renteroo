@@ -17,3 +17,8 @@ npm run dev
 
 php artisan migrate
 php artisan serve
+
+
+php artisan config:clear
+php artisan cache:clear
+php artisan config:cache
