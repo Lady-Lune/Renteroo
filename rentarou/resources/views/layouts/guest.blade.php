@@ -22,7 +22,7 @@
 
             <!-- Footer -->
             <div class="text-center mt-6 text-sm text-gray-600">
-                <p>© 2024 Rentarou. All rights reserved.</p>
+                <p>© 2025 Rentarou. All rights reserved.</p>
             </div>
         </div>
     </div>

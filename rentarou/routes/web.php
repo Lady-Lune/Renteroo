@@ -49,35 +49,25 @@ Route::get('/home', function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     
-    // Dashboard
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        // Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     
-    // Items (Placeholder routes - will create controllers later)
-    Route::get('/items', function () {
-        return '<h1>Admin Items Page</h1><p>This will be the items management page.</p>';
-    })->name('items.index');
+    // Items - Full CRUD
+    Route::resource('items', App\Http\Controllers\Admin\ItemController::class);
     
-    Route::get('/items/create', function () {
-        return '<h1>Create Item Page</h1><p>Form to create new item will be here.</p>';
-    })->name('items.create');
+    // Categories (placeholder for now)
+    Route::get('/categories', function () {
+        return 'Categories management coming soon';
+    })->name('categories.index');
     
-    // Rentals (Placeholder)
+    // Rentals (placeholder for now)
     Route::get('/rentals', function () {
-        return '<h1>Admin Rentals Page</h1><p>Manage all rentals here.</p>';
+        return 'Rentals management coming soon';
     })->name('rentals.index');
     
     Route::get('/rentals/create', function () {
-        return '<h1>Create Rental Page</h1><p>Form to create new rental.</p>';
+        return 'Create rental coming soon';
     })->name('rentals.create');
-    
-    Route::get('/rentals/{id}', function ($id) {
-        return '<h1>Rental Details #' . $id . '</h1>';
-    })->name('rentals.show');
-    
-    // Categories (Placeholder)
-    Route::get('/categories', function () {
-        return '<h1>Categories Page</h1><p>Manage categories here.</p>';
-    })->name('categories.index');
 });
 
 /*
@@ -106,6 +96,15 @@ Route::middleware(['auth', 'customer'])->prefix('customer')->name('customer.')->
 | Public Item Routes (Anyone can view)
 |--------------------------------------------------------------------------
 */
+// Public item routes
+Route::get('/items/{id}', function($id) {
+    return 'Item details page - will create next';
+})->name('items.show');
+
+// Invoice routes
+Route::middleware('auth')->get('/invoices', function() {
+    return 'Invoices page';
+})->name('invoices.index');
 
 Route::get('/items', function () {
     return '<h1>Public Items Catalog</h1><p>Browse available items.</p>';
