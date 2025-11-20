@@ -1,257 +1,113 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    .detail-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        padding: 2rem;
-        margin-bottom: 2rem;
-    }
-
-    .item-detail-image {
-        width: 100%;
-        max-height: 400px;
-        object-fit: cover;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-
-    .item-placeholder {
-        height: 400px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 8rem;
-    }
-
-    .info-label {
-        font-weight: 600;
-        color: #6c757d;
-        font-size: 0.9rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .info-value {
-        font-size: 1.1rem;
-        color: #212529;
-        font-weight: 600;
-    }
-
-    .stat-box {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        text-align: center;
-    }
-
-    .stat-number {
-        font-size: 2rem;
-        font-weight: 800;
-        margin-bottom: 0.25rem;
-    }
-
-    .stat-label {
-        font-size: 0.9rem;
-        opacity: 0.9;
-    }
-
-    .status-badge-large {
-        display: inline-block;
-        padding: 0.5rem 1.5rem;
-        border-radius: 50px;
-        font-size: 1rem;
-        font-weight: 600;
-    }
-
-    .rental-item {
-        padding: 1rem;
-        border-left: 4px solid #667eea;
-        background: #f8f9fa;
-        border-radius: 10px;
-        margin-bottom: 1rem;
-    }
-</style>
-
 <div class="container py-4">
-    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">
-                <i class="bi bi-box-seam"></i> Item Details
+                <i class="bi bi-box-seam"></i> Manage Items
             </h2>
-            <p class="text-muted mb-0">View item information and statistics</p>
+            <p class="text-muted mb-0">Browse, search, and manage your inventory</p>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('admin.items.edit', $item->id) }}" class="btn btn-success">
-                <i class="bi bi-pencil"></i> Edit Item
-            </a>
-            <a href="{{ route('admin.items.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Back to Items
-            </a>
+        <a href="{{ route('admin.items.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add New Item
+        </a>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="{{ route('admin.items.index') }}" method="GET">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" name="search" class="form-control" placeholder="Search by name or description..." value="{{ $search ?? '' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select name="category" class="form-select">
+                            <option value="">All Categories</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ ($category ?? '') == $cat->id ? 'selected' : '' }}>
+                                    {{ $cat->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-search"></i> Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
-    <div class="row">
-        <!-- Left Column - Image & Basic Info -->
-        <div class="col-lg-5">
-            <div class="detail-card">
-                @if($item->image)
-                    <img src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}" class="item-detail-image">
-                @else
-                    <div class="item-placeholder">
-                        <i class="{{ $item->category->icon }}"></i>
-                    </div>
-                @endif
-
-                <div class="mt-4">
-                    <h3 class="mb-3">{{ $item->name }}</h3>
-                    
-                    <div class="mb-3">
-                        <span class="info-label">Category:</span><br>
-                        <span class="badge bg-primary">
-                            <i class="{{ $item->category->icon }}"></i> {{ $item->category->name }}
-                        </span>
-                    </div>
-
-                    <div class="mb-3">
-                        <span class="info-label">Status:</span><br>
-                        <span class="status-badge-large 
-                            @if($item->status == 'available') bg-success
-                            @elseif($item->status == 'unavailable') bg-danger
-                            @else bg-warning text-dark
-                            @endif">
-                            <i class="bi bi-
-                                @if($item->status == 'available') check-circle
-                                @elseif($item->status == 'unavailable') x-circle
-                                @else tools
-                                @endif"></i>
-                            {{ ucfirst($item->status) }}
-                        </span>
-                    </div>
-
-                    <div class="mb-3">
-                        <span class="info-label">Description:</span><br>
-                        <p class="text-muted">{{ $item->description ?: 'No description provided' }}</p>
-                    </div>
-                </div>
-            </div>
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
-        <!-- Right Column - Details & Stats -->
-        <div class="col-lg-7">
-            <!-- Pricing & Availability -->
-            <div class="detail-card">
-                <h4 class="mb-4"><i class="bi bi-info-circle"></i> Pricing & Availability</h4>
-                
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="info-label">Rental Rate</div>
-                        <div class="info-value text-primary">Rs {{ number_format($item->rental_rate, 2) }} / day</div>
-                    </div>
-                    
-                    <div class="col-md-6 mb-3">
-                        <div class="info-label">Total Quantity</div>
-                        <div class="info-value">{{ $item->quantity }} units</div>
-                    </div>
-                    
-                    <div class="col-md-6 mb-3">
-                        <div class="info-label">Available Now</div>
-                        <div class="info-value text-success">{{ $item->available_quantity }} units</div>
-                    </div>
-                    
-                    <div class="col-md-6 mb-3">
-                        <div class="info-label">Currently Rented</div>
-                        <div class="info-value text-warning">{{ $item->quantity - $item->available_quantity }} units</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Statistics -->
-            <div class="detail-card">
-                <h4 class="mb-4"><i class="bi bi-graph-up"></i> Rental Statistics</h4>
-                
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="stat-box">
-                            <div class="stat-number">{{ $stats['total_rentals'] }}</div>
-                            <div class="stat-label">Total Rentals</div>
+    <!-- Items Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @forelse($items as $item)
+            <div class="col">
+                <div class="card h-100">
+                    @if($item->image)
+                        <img src="{{ Storage::url($item->image) }}" class="card-img-top" alt="{{ $item->name }}" style="height: 200px; object-fit: cover;">
+                    @else
+                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
+                            <i class="{{ $item->category->icon ?? 'bi bi-box' }}" style="font-size: 4rem; color: #ccc;"></i>
                         </div>
+                    @endif
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $item->name }}</h5>
+                        <p class="card-text text-muted">{{ Str::limit($item->description, 80) }}</p>
+                        <span class="badge bg-primary">{{ $item->category->name }}</span>
                     </div>
-                    <div class="col-md-4">
-                        <div class="stat-box" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                            <div class="stat-number">{{ $stats['active_rentals'] }}</div>
-                            <div class="stat-label">Active Rentals</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                            <div class="stat-number">Rs {{ number_format($stats['total_revenue'], 0) }}</div>
-                            <div class="stat-label">Total Revenue</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Rentals -->
-            <div class="detail-card">
-                <h4 class="mb-4"><i class="bi bi-clock-history"></i> Recent Rentals</h4>
-                
-                @if($item->rentals->count() > 0)
-                    @foreach($item->rentals->take(5) as $rental)
-                        <div class="rental-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{ $rental->user->name }}</strong>
-                                    <p class="text-muted small mb-0">
-                                        <i class="bi bi-calendar"></i> 
-                                        {{ $rental->start_date->format('M d') }} - {{ $rental->end_date->format('M d, Y') }}
-                                    </p>
-                                </div>
-                                <div class="text-end">
-                                    <span class="badge 
-                                        @if($rental->status == 'active') bg-success
-                                        @elseif($rental->status == 'completed') bg-info
-                                        @elseif($rental->status == 'pending') bg-warning
-                                        @else bg-danger
-                                        @endif">
-                                        {{ ucfirst($rental->status) }}
-                                    </span>
-                                    <p class="text-muted small mb-0">Rs {{ number_format($rental->total_amount, 2) }}</p>
-                                </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Rs {{ number_format($item->rental_rate, 2) }}/day</span>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('admin.items.show', $item->id) }}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ route('admin.items.edit', $item->id) }}" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ route('admin.items.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
-                    @endforeach
-                @else
-                    <div class="text-center py-4">
-                        <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d; opacity: 0.3;"></i>
-                        <p class="text-muted mt-2">No rental history yet</p>
                     </div>
-                @endif
+                </div>
             </div>
+        @empty
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 4rem; color: #6c757d;"></i>
+                    <h4 class="mt-3">No items found</h4>
+                    <p class="text-muted">Try adjusting your search or filter criteria.</p>
+                </div>
+            </div>
+        @endforelse
+    </div>
 
-            <!-- Action Buttons -->
-            <div class="d-flex gap-2">
-                <a href="{{ route('admin.items.edit', $item->id) }}" class="btn btn-success flex-fill">
-                    <i class="bi bi-pencil"></i> Edit Item
-                </a>
-                <form action="{{ route('admin.items.destroy', $item->id) }}" method="POST" class="flex-fill" onsubmit="return confirm('Are you sure you want to delete this item?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger w-100">
-                        <i class="bi bi-trash"></i> Delete Item
-                    </button>
-                </form>
-            </div>
-        </div>
+    <!-- Pagination -->
+    <div class="mt-4">
+        {{ $items->appends(request()->query())->links() }}
     </div>
 </div>
-
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 @endsection

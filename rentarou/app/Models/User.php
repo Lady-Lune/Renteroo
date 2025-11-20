@@ -138,8 +138,7 @@ class User extends Authenticatable
         /**
          * Get all invoices for this user
          */
-        public function invoices()
-        {
-            return $this->hasMany(Invoice::class);
-        }
-    }
+            public function invoices()
+            {
+                return $this->hasManyThrough(Invoice::class, Rental::class);
+            }    }

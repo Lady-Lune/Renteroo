@@ -32,7 +32,7 @@ class InvoiceController extends Controller
     public function show(Invoice $invoice)
     {
         // Ensure the user is authorized to see this invoice
-        if ($invoice->user_id !== auth()->id()) {
+        if ($invoice->rental->user_id !== auth()->id()) {
             abort(403);
         }
 

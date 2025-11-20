@@ -417,7 +417,7 @@
                     </a>
                 </div>
                 <div class="col-md-4">
-                    <a href="{{ route('invoices.index') }}" class="btn btn-outline-success w-100">
+                    <a href="{{ route('customer.invoices.index') }}" class="btn btn-outline-success w-100">
                         <i class="bi bi-receipt"></i> My Invoices
                     </a>
                 </div>
