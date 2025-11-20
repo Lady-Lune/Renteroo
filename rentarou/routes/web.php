@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Public Routes
@@ -86,6 +87,10 @@ Route::middleware(['auth', 'customer'])->prefix('customer')->name('customer.')->
     Route::get('/rentals/{id}', function ($id) {
         return '<h1>Rental Details #' . $id . '</h1>';
     })->name('rentals.show');
+
+    Route::post('/rentals', [App\Http\Controllers\Customer\RentalController::class, 'store'])
+    ->name('rentals.store');
+
 });
 
 /*
@@ -107,9 +112,10 @@ Route::get('/items', function () {
     return '<h1>Public Items Catalog</h1><p>Browse available items.</p>';
 })->name('items.index');
 
-Route::get('/items/{id}', function ($id) {
-    return '<h1>Item Details #' . $id . '</h1>';
-})->name('items.show');
+// Public Item Routes (Anyone can view)
+Route::get('/items', [App\Http\Controllers\ItemController::class, 'index'])->name('items.index');
+Route::get('/items/{id}', [App\Http\Controllers\ItemController::class, 'show'])->name('items.show');
+
 
 /*
 |--------------------------------------------------------------------------
