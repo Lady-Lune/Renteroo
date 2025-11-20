@@ -1,9 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Customer\DashboardController;
+use App\Http\Controllers\Customer\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,16 +78,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 Route::middleware(['auth', 'customer'])->prefix('customer')->name('customer.')->group(function () {
     
     // Dashboard
-    Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\Customer\DashboardController::class, 'index'])->name('dashboard');
     
-    // Rentals (Placeholder)
-    Route::get('/rentals', function () {
-        return '<h1>My Rentals Page</h1><p>Your rental history.</p>';
-    })->name('rentals.index');
-    
-    Route::get('/rentals/{id}', function ($id) {
-        return '<h1>Rental Details #' . $id . '</h1>';
-    })->name('rentals.show');
+    // Rentals
+    Route::get('/rentals', [App\Http\Controllers\Customer\RentalController::class, 'index'])->name('rentals.index');
+    Route::get('/rentals/{rental}', [App\Http\Controllers\Customer\RentalController::class, 'show'])->name('rentals.show');
+
+    // Invoices
+    Route::get('/invoices', [App\Http\Controllers\Customer\InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('/invoices/{invoice}', [App\Http\Controllers\Customer\InvoiceController::class, 'show'])->name('invoices.show');
 });
 
 /*
@@ -113,19 +111,3 @@ Route::get('/items', function () {
 Route::get('/items/{id}', function ($id) {
     return '<h1>Item Details #' . $id . '</h1>';
 })->name('items.show');
-
-/*
-|--------------------------------------------------------------------------
-| Invoice Routes (Authenticated users only)
-|--------------------------------------------------------------------------
-*/
-
-Route::middleware('auth')->prefix('invoices')->name('invoices.')->group(function () {
-    Route::get('/', function () {
-        return '<h1>My Invoices</h1><p>Your invoice history.</p>';
-    })->name('index');
-    
-    Route::get('/{id}', function ($id) {
-        return '<h1>Invoice #' . $id . '</h1>';
-    })->name('show');
-});

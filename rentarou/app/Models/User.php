@@ -127,11 +127,19 @@ class User extends Authenticatable
         return $this->activeRentals()->count();
     }
 
-    /**
- * Get all items owned by this admin
- */
-public function items()
-{
-    return $this->hasMany(Item::class);
-}
-}
+        /**
+         * Get all items owned by this admin
+         */
+        public function items()
+        {
+            return $this->hasMany(Item::class);
+        }
+    
+        /**
+         * Get all invoices for this user
+         */
+        public function invoices()
+        {
+            return $this->hasMany(Invoice::class);
+        }
+    }
