@@ -55,15 +55,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Items - Full CRUD
     Route::resource('items', App\Http\Controllers\Admin\ItemController::class);
     
-    // Categories (placeholder for now)
-    Route::get('/categories', function () {
-        return 'Categories management coming soon';
-    })->name('categories.index');
+    // Categories - Full CRUD
+    Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
     
-    // Rentals (placeholder for now)
-    Route::get('/rentals', function () {
-        return 'Rentals management coming soon';
-    })->name('rentals.index');
+    // Rentals
+    Route::resource('rentals', App\Http\Controllers\Admin\RentalController::class);
+
     
     Route::get('/rentals/create', function () {
         return 'Create rental coming soon';
