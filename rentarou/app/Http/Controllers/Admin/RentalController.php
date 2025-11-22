@@ -189,4 +189,35 @@ class RentalController extends Controller
         // Download with proper filename
         return $pdf->download('invoice_' . $rental->invoice->invoice_number . '.pdf');
     }
+
+    /**
+     * Cancel a rental
+     */
+    public function cancel(Rental $rental)
+    {
+        // Authorization: Only admin who owns the rented item can cancel
+        if ($rental->item->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Only allow cancellation for pending or active rentals
+        if (!in_array($rental->status, ['pending', 'active'])) {
+            return back()->with('error', 'Only pending or active rentals can be cancelled.');
+        }
+
+        // Restore item availability
+        $rental->item->increment('available_quantity', $rental->quantity);
+
+        // Update rental status
+        $rental->update([
+            'status' => 'cancelled',
+            'notes' => ($rental->notes ? $rental->notes . "\n\n" : '') . 
+                      'Rental cancelled on ' . now()->format('M d, Y H:i') . ' by admin.'
+        ]);
+
+        // For pending invoices, we keep them but they become irrelevant since rental is cancelled
+        // The invoice can be used for record keeping purposes
+
+        return back()->with('success', 'Rental has been cancelled successfully. Item availability has been restored.');
+    }
 }

@@ -303,10 +303,16 @@
                     </button>
                 @endif
 
-                @if($rental->status != 'cancelled')
-                    <button class="btn btn-danger">
-                        <i class="bi bi-x-circle"></i> Cancel Rental
-                    </button>
+                @if($rental->status != 'cancelled' && $rental->status != 'completed')
+                    <form action="{{ route('admin.rentals.cancel', $rental->id) }}" method="POST" 
+                          onsubmit="return confirm('Are you sure you want to cancel this rental? This action cannot be undone and the item availability will be restored.')"
+                          style="display: inline;">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" class="btn btn-danger w-100">
+                            <i class="bi bi-x-circle"></i> Cancel Rental
+                        </button>
+                    </form>
                 @endif
             </div>
         </div>

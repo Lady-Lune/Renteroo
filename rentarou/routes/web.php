@@ -68,6 +68,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
      Route::get('/rentals/{rental}/invoice', [App\Http\Controllers\Admin\RentalController::class, 'downloadInvoice'])
          ->name('rentals.invoice');
 
+     // Cancel rental
+     Route::patch('/rentals/{rental}/cancel', [App\Http\Controllers\Admin\RentalController::class, 'cancel'])
+         ->name('rentals.cancel');
+
 });
 
 /*
