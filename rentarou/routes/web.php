@@ -89,14 +89,10 @@ Route::middleware(['auth', 'customer'])->prefix('customer')->name('customer.')->
     // Dashboard
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
     
-    // Rentals (Placeholder)
-    Route::get('/rentals', function () {
-        return '<h1>My Rentals Page</h1><p>Your rental history.</p>';
-    })->name('rentals.index');
-    
-    Route::get('/rentals/{id}', function ($id) {
-        return '<h1>Rental Details #' . $id . '</h1>';
-    })->name('rentals.show');
+    // Rentals
+    Route::get('/rentals', [App\Http\Controllers\Customer\RentalController::class, 'index'])->name('rentals.index');
+    Route::get('/rentals/{rental}', [App\Http\Controllers\Customer\RentalController::class, 'show'])->name('rentals.show');
+    Route::get('/rentals/{rental}/download-invoice', [App\Http\Controllers\Customer\RentalController::class, 'downloadInvoice'])->name('rentals.download-invoice');
 
     Route::post('/rentals', [App\Http\Controllers\Customer\RentalController::class, 'store'])
     ->name('rentals.store');
