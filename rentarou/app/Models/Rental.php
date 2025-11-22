@@ -11,19 +11,24 @@ class Rental extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'item_id',
-        'start_date',
-        'end_date',
-        'actual_return_date',
-        'quantity',
-        'daily_rate',
-        'total_amount',
-        'late_fee',
-        'damage_fee',
-        'status',
-        'notes',
-    ];
+    'user_id',
+    'guest_name',      
+    'guest_email',     
+    'guest_phone',     
+    'guest_id_number', 
+    'is_guest',        
+    'item_id',
+    'start_date',
+    'end_date',
+    'actual_return_date',
+    'quantity',
+    'daily_rate',
+    'total_amount',
+    'late_fee',
+    'damage_fee',
+    'status',
+    'notes',
+];
 
     protected $casts = [
         'start_date' => 'date',
@@ -35,6 +40,20 @@ class Rental extends Model
         'damage_fee' => 'decimal:2',
     ];
 
+    public function getCustomerName()
+{
+    return $this->is_guest ? $this->guest_name : $this->user->name;
+}
+
+public function getCustomerEmail()
+{
+    return $this->is_guest ? $this->guest_email : $this->user->email;
+}
+
+public function getCustomerPhone()
+{
+    return $this->is_guest ? $this->guest_phone : ($this->user->phone ?? 'N/A');
+}
     /**
      * Get the user who made this rental
      */
