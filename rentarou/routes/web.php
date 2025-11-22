@@ -62,10 +62,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Rentals
     Route::resource('rentals', App\Http\Controllers\Admin\RentalController::class);
 
-    
-    Route::get('/rentals/create', function () {
-        return 'Create rental coming soon';
-    })->name('rentals.create');
+     Route::post('/rentals/quick-register', [App\Http\Controllers\Admin\RentalController::class, 'quickRegister'])->name('rentals.quickRegister');
+
 });
 
 /*

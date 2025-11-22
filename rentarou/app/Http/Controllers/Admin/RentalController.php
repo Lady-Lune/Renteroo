@@ -48,14 +48,26 @@ class RentalController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+        // Validate based on whether it's a guest rental
+        $rules = [
             'item_id' => 'required|exists:items,id',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
             'quantity' => 'required|integer|min:1',
             'notes' => 'nullable|string',
-        ]);
+            'is_guest' => 'boolean',
+        ];
+
+        if ($request->is_guest) {
+            $rules['guest_name'] = 'required|string|max:255';
+            $rules['guest_phone'] = 'required|string|max:20';
+            $rules['guest_email'] = 'nullable|email|max:255';
+            $rules['guest_id_number'] = 'required|string|max:50';
+        } else {
+            $rules['user_id'] = 'required|exists:users,id';
+        }
+
+        $validated = $request->validate($rules);
 
         $item = Item::findOrFail($validated['item_id']);
 
@@ -72,9 +84,8 @@ class RentalController extends Controller
         // Calculate total amount
         $totalAmount = $item->rental_rate * $days * $validated['quantity'];
 
-        // Create rental
-        $rental = Rental::create([
-            'user_id' => $validated['user_id'],
+        // Prepare rental data
+        $rentalData = [
             'item_id' => $validated['item_id'],
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
@@ -83,7 +94,21 @@ class RentalController extends Controller
             'total_amount' => $totalAmount,
             'status' => 'active',
             'notes' => $validated['notes'],
-        ]);
+            'is_guest' => $request->is_guest ?? false,
+        ];
+
+        // Add user_id or guest info
+        if ($request->is_guest) {
+            $rentalData['guest_name'] = $validated['guest_name'];
+            $rentalData['guest_phone'] = $validated['guest_phone'];
+            $rentalData['guest_email'] = $validated['guest_email'] ?? null;
+            $rentalData['guest_id_number'] = $validated['guest_id_number'];
+        } else {
+            $rentalData['user_id'] = $validated['user_id'];
+        }
+
+        // Create rental
+        $rental = Rental::create($rentalData);
 
         // Update item availability
         $item->decrement('available_quantity', $validated['quantity']);
@@ -100,6 +125,33 @@ class RentalController extends Controller
 
         return redirect()->route('admin.rentals.index')
             ->with('success', 'Rental created successfully!');
+    }
+
+    /**
+     * Store a quick customer registration
+     */
+    public function quickRegister(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required|string|max:20',
+            'password' => 'required|string|min:8',
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'password' => bcrypt($validated['password']),
+            'role' => 'customer',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'user' => $user,
+            'message' => 'Customer registered successfully!'
+        ]);
     }
 
     /**

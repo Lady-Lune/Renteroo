@@ -72,14 +72,31 @@
                 <h5 class="mb-4">Booking Information</h5>
                 
                 <div class="info-row">
-                    <div class="row">
-                        <div class="col-md-4 text-muted">Customer</div>
-                        <div class="col-md-8">
-                            <strong>{{ $rental->user->name }}</strong>
-                            <p class="text-muted small mb-0">{{ $rental->user->email }}</p>
-                        </div>
-                    </div>
-                </div>
+    <div class="row">
+        <div class="col-md-4 text-muted">Customer</div>
+        <div class="col-md-8">
+            @if($rental->is_guest)
+                <strong>{{ $rental->guest_name }}</strong>
+                <span class="badge bg-warning text-dark ms-2">Guest</span>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-telephone"></i> {{ $rental->guest_phone }}
+                </p>
+                @if($rental->guest_email)
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-envelope"></i> {{ $rental->guest_email }}
+                    </p>
+                @endif
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-card-text"></i> ID: {{ $rental->guest_id_number }}
+                </p>
+            @else
+                <strong>{{ $rental->user->name }}</strong>
+                <span class="badge bg-primary ms-2">Registered</span>
+                <p class="text-muted small mb-0">{{ $rental->user->email }}</p>
+            @endif
+        </div>
+    </div>
+</div>
 
                 <div class="info-row">
                     <div class="row">
