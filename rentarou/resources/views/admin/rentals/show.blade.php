@@ -298,7 +298,7 @@
                 @endif
 
                 @if($rental->status == 'active')
-                    <button class="btn btn-info">
+                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#returnModal">
                         <i class="bi bi-box-arrow-in-left"></i> Mark as Returned
                     </button>
                 @endif
@@ -318,6 +318,98 @@
         </div>
     </div>
 </div>
+
+<!-- Return Modal -->
+<div class="modal fade" id="returnModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-box-arrow-in-left"></i> Mark Rental as Returned
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('admin.rentals.return', $rental->id) }}" method="POST">
+                @csrf
+                @method('PATCH')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Return Date *</label>
+                        <input type="date" class="form-control" name="return_date" 
+                               value="{{ date('Y-m-d') }}" 
+                               min="{{ $rental->start_date->format('Y-m-d') }}" 
+                               max="{{ date('Y-m-d') }}"
+                               required>
+                        <div class="form-text">
+                            Original rental period: {{ $rental->start_date->format('M d') }} - {{ $rental->end_date->format('M d, Y') }}
+                            ({{ $rental->getRentalDays() }} days)
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Damage Assessment</label>
+                        <select class="form-select" name="damage_condition" onchange="toggleDamageFee(this)">
+                            <option value="good">Good Condition - No Damage</option>
+                            <option value="minor">Minor Damage - Small Fee</option>
+                            <option value="major">Major Damage - Large Fee</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="damageDetails" style="display: none;">
+                        <label class="form-label">Damage Description</label>
+                        <textarea class="form-control" name="damage_notes" rows="3" 
+                                  placeholder="Describe the damage..."></textarea>
+                    </div>
+
+                    <div class="mb-3" id="damageFeeSection" style="display: none;">
+                        <label class="form-label">Damage Fee (Rs)</label>
+                        <input type="number" class="form-control" name="damage_fee" 
+                               min="0" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong><i class="bi bi-info-circle"></i> Note:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>If returned early, a refund will be calculated automatically</li>
+                            <li>If returned late, late fees will be applied (50% of daily rate per day)</li>
+                            <li>Item availability will be restored upon return</li>
+                            <li>Invoice will be updated to reflect actual charges</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Mark as Returned
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleDamageFee(select) {
+        const damageDetails = document.getElementById('damageDetails');
+        const damageFeeSection = document.getElementById('damageFeeSection');
+        
+        if (select.value === 'good') {
+            damageDetails.style.display = 'none';
+            damageFeeSection.style.display = 'none';
+        } else {
+            damageDetails.style.display = 'block';
+            damageFeeSection.style.display = 'block';
+            
+            // Set suggested damage fee based on condition
+            const damageFeeInput = document.querySelector('input[name="damage_fee"]');
+            if (select.value === 'minor') {
+                damageFeeInput.value = '{{ $rental->daily_rate * 2 }}'; // 2 days worth
+            } else if (select.value === 'major') {
+                damageFeeInput.value = '{{ $rental->daily_rate * 7 }}'; // 1 week worth
+            }
+        }
+    }
+</script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 @endsection

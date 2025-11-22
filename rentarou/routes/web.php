@@ -72,6 +72,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
      Route::patch('/rentals/{rental}/cancel', [App\Http\Controllers\Admin\RentalController::class, 'cancel'])
          ->name('rentals.cancel');
 
+     // Mark rental as returned
+     Route::patch('/rentals/{rental}/return', [App\Http\Controllers\Admin\RentalController::class, 'markReturned'])
+         ->name('rentals.return');
+
 });
 
 /*
