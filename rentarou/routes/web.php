@@ -63,6 +63,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('rentals', App\Http\Controllers\Admin\RentalController::class);
 
      Route::post('/rentals/quick-register', [App\Http\Controllers\Admin\RentalController::class, 'quickRegister'])->name('rentals.quickRegister');
+     
+     // PDF Invoice for rentals
+     Route::get('/rentals/{rental}/invoice', [App\Http\Controllers\Admin\RentalController::class, 'downloadInvoice'])
+         ->name('rentals.invoice');
 
 });
 

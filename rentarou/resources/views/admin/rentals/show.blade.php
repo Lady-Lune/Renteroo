@@ -279,7 +279,7 @@
                         <strong>Due Date:</strong> {{ $rental->invoice->due_date->format('M d, Y') }}
                     </p>
 
-                    <a href="#" class="btn btn-outline-primary w-100 mb-2">
+                    <a href="{{ route('admin.rentals.invoice', $rental->id) }}" class="btn btn-outline-primary w-100 mb-2">
                         <i class="bi bi-file-pdf"></i> Download Invoice
                     </a>
                     

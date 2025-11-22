@@ -9,6 +9,7 @@ use App\Models\Item;
 use App\Models\User;
 use App\Models\Invoice;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RentalController extends Controller
 {
@@ -161,5 +162,31 @@ class RentalController extends Controller
     {
         $rental->load(['user', 'item.category', 'invoice']);
         return view('admin.rentals.show', compact('rental'));
+    }
+
+
+    /**
+     * Download PDF invoice for the rental
+     */
+    public function downloadInvoice(Rental $rental)
+    {
+        // Ensure admin can only download invoices for their own items
+        if ($rental->item->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this rental.');
+        }
+
+        // Load necessary relationships
+        $rental->load(['user', 'item.category', 'invoice']);
+
+        // Check if invoice exists
+        if (!$rental->invoice) {
+            return back()->with('error', 'No invoice found for this rental.');
+        }
+
+        // Generate PDF
+        $pdf = Pdf::loadView('admin.invoices.rental', compact('rental'));
+
+        // Download with proper filename
+        return $pdf->download('invoice_' . $rental->invoice->invoice_number . '.pdf');
     }
 }
