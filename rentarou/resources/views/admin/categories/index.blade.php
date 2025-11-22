@@ -92,7 +92,7 @@
         </div>
 
         <div class="mt-4">
-            {{ $categories->links() }}
+            {{ $categories->links('custom-pagination') }}
         </div>
     @else
         <div class="text-center py-5">

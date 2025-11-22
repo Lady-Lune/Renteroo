@@ -147,7 +147,7 @@
         @endforeach
 
         <div class="mt-4">
-            {{ $rentals->links() }}
+            {{ $rentals->links('custom-pagination') }}
         </div>
     @else
         <div class="text-center py-5">

@@ -198,6 +198,57 @@
         opacity: 0.3;
         margin-bottom: 1rem;
     }
+
+    /* Pagination Fixes - Clean Approach */
+    .items-section .pagination-container {
+        font-size: 0.875rem;
+        isolation: isolate; /* Create new stacking context */
+    }
+    
+    .items-section .pagination-container .pagination {
+        margin: 0;
+        justify-content: center;
+        font-size: inherit;
+    }
+
+    .items-section .pagination-container .pagination .page-item .page-link {
+        color: #667eea;
+        border: 1px solid #dee2e6;
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+        line-height: 1.25;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .items-section .pagination-container .pagination .page-item .page-link:hover {
+        color: white;
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+
+    .items-section .pagination-container .pagination .page-item.active .page-link {
+        background-color: #667eea;
+        border-color: #667eea;
+        color: white;
+    }
+
+    /* Target Bootstrap Icons specifically in pagination */
+    .items-section .pagination-container .pagination .page-link i,
+    .items-section .pagination-container .pagination .page-link .bi {
+        font-size: 0.75rem;
+        width: auto;
+        height: auto;
+    }
+
+    /* Reset any inherited large font sizes */
+    .items-section .pagination-container .pagination .page-link svg {
+        width: 1rem;
+        height: 1rem;
+    }
 </style>
 
 <!-- Hero Section -->
@@ -350,7 +401,7 @@
     </div>
 
     <!-- Available Items Section -->
-    <div class="mb-5">
+    <div class="mb-5 items-section">
         <h2 class="section-title">
             <i class="bi bi-box-seam"></i> Available Items to Rent
         </h2>
@@ -394,7 +445,9 @@
 
             <!-- Pagination -->
             <div class="mt-4">
-                {{ $availableItems->links() }}
+                <div class="pagination-container">
+                    {{ $availableItems->links('custom-pagination') }}
+                </div>
             </div>
         @else
             <div class="empty-state">
