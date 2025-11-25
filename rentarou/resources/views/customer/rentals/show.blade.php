@@ -51,6 +51,26 @@
         align-items: center;
         justify-content: center;
     }
+
+    .item-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 15px;
+    }
+
+    .status-alert {
+        border-radius: 15px;
+        border: none;
+        padding: 1rem;
+    }
+
+    .contact-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+    }
 </style>
 
 <div class="container py-4">
@@ -59,57 +79,68 @@
             <h2><i class="bi bi-receipt"></i> Rental Details</h2>
             <p class="text-muted mb-0">Rental #{{ $rental->id }}</p>
         </div>
-        <a href="{{ route('admin.rentals.index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Rentals
+        <a href="{{ route('customer.rentals.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to My Rentals
         </a>
     </div>
+
+    <!-- Status Alert -->
+    @if($rental->status == 'active' && $rental->isOverdue())
+        <div class="alert alert-danger status-alert">
+            <h5><i class="bi bi-exclamation-triangle"></i> Rental Overdue</h5>
+            <p class="mb-0">Your rental is {{ $rental->getLateDays() }} day(s) overdue. Please return the item as soon as possible to avoid additional late fees.</p>
+        </div>
+    @elseif($rental->status == 'active')
+        @php $daysLeft = $rental->getDaysUntilReturn(); @endphp
+        @if($daysLeft <= 2)
+            <div class="alert alert-warning status-alert">
+                <h5><i class="bi bi-clock-history"></i> Return Reminder</h5>
+                <p class="mb-0">Your rental is due for return in {{ $daysLeft }} day(s). Please plan to return the item on time.</p>
+            </div>
+        @endif
+    @elseif($rental->status == 'completed')
+        <div class="alert alert-success status-alert">
+            <h5><i class="bi bi-check-circle"></i> Rental Completed</h5>
+            <p class="mb-0">Thank you for returning the item on time! We hope you had a great experience.</p>
+        </div>
+    @elseif($rental->status == 'cancelled')
+        <div class="alert alert-secondary status-alert">
+            <h5><i class="bi bi-x-circle"></i> Rental Cancelled</h5>
+            <p class="mb-0">This rental has been cancelled.</p>
+        </div>
+    @endif
 
     <div class="row">
         <!-- Left Column -->
         <div class="col-lg-8">
-            <!-- Customer & Item Info -->
+            <!-- Item & Rental Info -->
             <div class="detail-card">
-                <h5 class="mb-4">Booking Information</h5>
-                
-                <div class="info-row">
-    <div class="row">
-        <div class="col-md-4 text-muted">Customer</div>
-        <div class="col-md-8">
-            @if($rental->is_guest)
-                <strong>{{ $rental->guest_name }}</strong>
-                <span class="badge bg-warning text-dark ms-2">Guest</span>
-                <p class="text-muted small mb-0">
-                    <i class="bi bi-telephone"></i> {{ $rental->guest_phone }}
-                </p>
-                @if($rental->guest_email)
-                    <p class="text-muted small mb-0">
-                        <i class="bi bi-envelope"></i> {{ $rental->guest_email }}
-                    </p>
-                @endif
-                <p class="text-muted small mb-0">
-                    <i class="bi bi-card-text"></i> ID: {{ $rental->guest_id_number }}
-                </p>
-            @else
-                <strong>{{ $rental->user->name }}</strong>
-                <span class="badge bg-primary ms-2">Registered</span>
-                <p class="text-muted small mb-0">{{ $rental->user->email }}</p>
-            @endif
-        </div>
-    </div>
-</div>
-
-                <div class="info-row">
-                    <div class="row">
-                        <div class="col-md-4 text-muted">Item</div>
-                        <div class="col-md-8">
-                            <strong>{{ $rental->item->name }}</strong>
-                            <p class="text-muted small mb-0">
-                                <i class="{{ $rental->item->category->icon }}"></i> {{ $rental->item->category->name }}
-                            </p>
-                        </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        @if($rental->item->image)
+                            <img src="{{ asset('storage/' . $rental->item->image) }}" alt="{{ $rental->item->name }}" class="item-image">
+                        @else
+                            <div class="item-image d-flex align-items-center justify-content-center bg-light">
+                                <i class="{{ $rental->item->category->icon }} text-muted" style="font-size: 3rem;"></i>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="col-md-8">
+                        <h4 class="mb-3">{{ $rental->item->name }}</h4>
+                        <p class="text-muted mb-3">
+                            <i class="{{ $rental->item->category->icon }}"></i> {{ $rental->item->category->name }}
+                        </p>
+                        @if($rental->item->description)
+                            <p class="mb-0">{{ $rental->item->description }}</p>
+                        @endif
                     </div>
                 </div>
+            </div>
 
+            <!-- Rental Details -->
+            <div class="detail-card">
+                <h5 class="mb-4">Rental Information</h5>
+                
                 <div class="info-row">
                     <div class="row">
                         <div class="col-md-4 text-muted">Rental Period</div>
@@ -119,6 +150,24 @@
                         </div>
                     </div>
                 </div>
+
+                @if($rental->actual_return_date)
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-md-4 text-muted">Actual Return Date</div>
+                            <div class="col-md-8">
+                                <strong>{{ $rental->actual_return_date->format('M d, Y') }}</strong>
+                                @if($rental->actual_return_date->lt($rental->end_date))
+                                    <span class="badge bg-success ms-2">Early Return</span>
+                                @elseif($rental->actual_return_date->gt($rental->end_date))
+                                    <span class="badge bg-danger ms-2">Late Return</span>
+                                @else
+                                    <span class="badge bg-info ms-2">On Time</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <div class="info-row">
                     <div class="row">
@@ -140,15 +189,6 @@
                                 @endif">
                                 {{ ucfirst($rental->status) }}
                             </span>
-                            
-                            @if($rental->isOverdue())
-                                <span class="badge bg-danger ms-2">{{ $rental->getLateDays() }} days overdue</span>
-                            @elseif($rental->status == 'active')
-                                @php $daysLeft = $rental->getDaysUntilReturn(); @endphp
-                                @if($daysLeft >= 0)
-                                    <span class="badge bg-info ms-2">{{ $daysLeft }} days until return</span>
-                                @endif
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -172,7 +212,7 @@
                         <div class="timeline-icon">
                             <i class="bi bi-check text-success"></i>
                         </div>
-                        <strong>Rental Created</strong>
+                        <strong>Rental Booked</strong>
                         <p class="text-muted small mb-0">{{ $rental->created_at->format('M d, Y h:i A') }}</p>
                     </div>
 
@@ -181,7 +221,7 @@
                             <div class="timeline-icon">
                                 <i class="bi bi-box-arrow-right text-primary"></i>
                             </div>
-                            <strong>Item Picked Up</strong>
+                            <strong>Item Pickup</strong>
                             <p class="text-muted small mb-0">{{ $rental->start_date->format('M d, Y') }}</p>
                         </div>
                     @endif
@@ -279,133 +319,32 @@
                         <strong>Due Date:</strong> {{ $rental->invoice->due_date->format('M d, Y') }}
                     </p>
 
-                    <a href="{{ route('admin.rentals.invoice', $rental->id) }}" class="btn btn-outline-primary w-100">
-                        <i class="bi bi-file-pdf"></i> Download Invoice
-                    </a>
+                    <div class="d-grid gap-2 mb-3">
+                        <a href="{{ route('customer.rentals.download-invoice', $rental->id) }}" 
+                           class="btn btn-primary"
+                           target="_blank">
+                            <i class="bi bi-download"></i> Download Invoice PDF
+                        </a>
+                    </div>
+
+                    @if($rental->invoice->status == 'pending')
+                        <div class="alert alert-warning">
+                            <small><strong>Payment Due:</strong> Please settle your payment by the due date.</small>
+                        </div>
+                    @endif
                 </div>
             @endif
 
-            <!-- Actions -->
-            <div class="d-flex flex-column gap-2">
-                @if($rental->status == 'pending')
-                    <button class="btn btn-success">
-                        <i class="bi bi-check-circle"></i> Confirm Rental
-                    </button>
-                @endif
-
-                @if($rental->status == 'active')
-                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#returnModal">
-                        <i class="bi bi-box-arrow-in-left"></i> Mark as Returned
-                    </button>
-                @endif
-
-                @if($rental->status != 'cancelled' && $rental->status != 'completed')
-                    <form action="{{ route('admin.rentals.cancel', $rental->id) }}" method="POST" 
-                          onsubmit="return confirm('Are you sure you want to cancel this rental? This action cannot be undone and the item availability will be restored.')"
-                          style="display: inline;">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit" class="btn btn-danger w-100">
-                            <i class="bi bi-x-circle"></i> Cancel Rental
-                        </button>
-                    </form>
-                @endif
+            <!-- Contact Information -->
+            <div class="contact-card">
+                <h5 class="mb-3"><i class="bi bi-headset"></i> Need Help?</h5>
+                <p class="mb-2">If you have any questions about your rental, please contact us:</p>
+                <p class="mb-2"><i class="bi bi-envelope"></i> support@rentarou.com</p>
+                <p class="mb-0"><i class="bi bi-telephone"></i> +1-234-567-8900</p>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Return Modal -->
-<div class="modal fade" id="returnModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="bi bi-box-arrow-in-left"></i> Mark Rental as Returned
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="{{ route('admin.rentals.return', $rental->id) }}" method="POST">
-                @csrf
-                @method('PATCH')
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Return Date *</label>
-                        <input type="date" class="form-control" name="return_date" 
-                               value="{{ date('Y-m-d') }}" 
-                               min="{{ $rental->start_date->format('Y-m-d') }}" 
-                               max="{{ date('Y-m-d') }}"
-                               required>
-                        <div class="form-text">
-                            Original rental period: {{ $rental->start_date->format('M d') }} - {{ $rental->end_date->format('M d, Y') }}
-                            ({{ $rental->getRentalDays() }} days)
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Damage Assessment</label>
-                        <select class="form-select" name="damage_condition" onchange="toggleDamageFee(this)">
-                            <option value="good">Good Condition - No Damage</option>
-                            <option value="minor">Minor Damage - Small Fee</option>
-                            <option value="major">Major Damage - Large Fee</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3" id="damageDetails" style="display: none;">
-                        <label class="form-label">Damage Description</label>
-                        <textarea class="form-control" name="damage_notes" rows="3" 
-                                  placeholder="Describe the damage..."></textarea>
-                    </div>
-
-                    <div class="mb-3" id="damageFeeSection" style="display: none;">
-                        <label class="form-label">Damage Fee (Rs)</label>
-                        <input type="number" class="form-control" name="damage_fee" 
-                               min="0" step="0.01" placeholder="0.00">
-                    </div>
-
-                    <div class="alert alert-info">
-                        <strong><i class="bi bi-info-circle"></i> Note:</strong>
-                        <ul class="mb-0 mt-2">
-                            <li>If returned early, a refund will be calculated automatically</li>
-                            <li>If returned late, late fees will be applied (50% of daily rate per day)</li>
-                            <li>Item availability will be restored upon return</li>
-                            <li>Invoice will be updated to reflect actual charges</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-circle"></i> Mark as Returned
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-    function toggleDamageFee(select) {
-        const damageDetails = document.getElementById('damageDetails');
-        const damageFeeSection = document.getElementById('damageFeeSection');
-        
-        if (select.value === 'good') {
-            damageDetails.style.display = 'none';
-            damageFeeSection.style.display = 'none';
-        } else {
-            damageDetails.style.display = 'block';
-            damageFeeSection.style.display = 'block';
-            
-            // Set suggested damage fee based on condition
-            const damageFeeInput = document.querySelector('input[name="damage_fee"]');
-            if (select.value === 'minor') {
-                damageFeeInput.value = '{{ $rental->daily_rate * 2 }}'; // 2 days worth
-            } else if (select.value === 'major') {
-                damageFeeInput.value = '{{ $rental->daily_rate * 7 }}'; // 1 week worth
-            }
-        }
-    }
-</script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 @endsection

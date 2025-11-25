@@ -92,7 +92,12 @@
                     <div class="col-md-3">
                         <h5 class="mb-1">{{ $rental->item->name }}</h5>
                         <p class="text-muted small mb-0">
-                            <i class="bi bi-person"></i> {{ $rental->user->name }}
+                            <i class="bi bi-person"></i> 
+                            @if($rental->is_guest)
+                                {{ $rental->guest_name }} <small class="text-warning">(Guest)</small>
+                            @else
+                                {{ $rental->user->name }}
+                            @endif
                         </p>
                     </div>
                     <div class="col-md-3">

@@ -124,7 +124,7 @@ public function getCustomerPhone()
     public function getDaysUntilReturn()
     {
         if ($this->status === 'active') {
-            return Carbon::today()->diffInDays($this->end_date, false);
+            return $this->end_date->diffInDays(Carbon::today(), false);
         }
         return null;
     }
