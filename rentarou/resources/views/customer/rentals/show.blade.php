@@ -320,10 +320,14 @@
                     </p>
 
                     <div class="d-grid gap-2 mb-3">
-                        <a href="{{ route('customer.rentals.download-invoice', $rental->id) }}" 
-                           class="btn btn-primary"
+                        <a href="{{ route('invoices.show', $rental->invoice->id) }}" 
+                           class="btn btn-primary">
+                            <i class="bi bi-eye"></i> View Invoice Details
+                        </a>
+                        <a href="{{ route('invoices.download', $rental->invoice->id) }}" 
+                           class="btn btn-outline-secondary"
                            target="_blank">
-                            <i class="bi bi-download"></i> Download Invoice PDF
+                            <i class="bi bi-download"></i> Download PDF
                         </a>
                     </div>
 

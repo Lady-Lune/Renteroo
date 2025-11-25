@@ -53,9 +53,20 @@
 <div class="page-header">
     <div class="container">
         <h1 class="display-5 fw-bold mb-3">
-            <i class="bi bi-receipt"></i> My Invoices
+            <i class="bi bi-receipt"></i> 
+            @if(auth()->user()->isAdmin())
+                All Invoices
+            @else
+                My Invoices
+            @endif
         </h1>
-        <p class="lead mb-0">View and manage all your rental invoices</p>
+        <p class="lead mb-0">
+            @if(auth()->user()->isAdmin())
+                View and manage all rental invoices
+            @else
+                View and manage your rental invoices
+            @endif
+        </p>
     </div>
 </div>
 
@@ -98,13 +109,18 @@
                             </div>
                             <div class="col-lg-3 text-lg-end mt-3 mt-lg-0">
                                 <div class="d-grid gap-2">
-                                    <a href="{{ route('customer.rentals.show', $invoice->rental->id) }}" class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-eye"></i> View Rental
+                                    <a href="{{ route('invoices.show', $invoice->id) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-eye"></i> View Details
                                     </a>
-                                    <a href="{{ route('customer.rentals.download-invoice', $invoice->rental->id) }}" 
-                                       class="btn btn-primary btn-sm" target="_blank">
-                                        <i class="bi bi-download"></i> Download PDF
-                                    </a>
+                                    @if(auth()->user()->isAdmin() && $invoice->status !== 'paid')
+                                        <form action="{{ route('invoices.mark-paid', $invoice->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            <input type="hidden" name="payment_method" value="manual">
+                                            <button type="submit" class="btn btn-success btn-sm w-100">
+                                                <i class="bi bi-check-circle"></i> Mark Paid
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -121,8 +137,16 @@
         <div class="empty-state">
             <i class="bi bi-receipt"></i>
             <h4>No invoices yet</h4>
-            <p>You don't have any rental invoices yet. Start by booking a rental!</p>
-            <a href="{{ route('customer.dashboard') }}" class="btn btn-primary">Browse Items</a>
+            <p>
+                @if(auth()->user()->isAdmin())
+                    No invoices found in the system.
+                @else
+                    You don't have any rental invoices yet. Start by booking a rental!
+                @endif
+            </p>
+            @if(!auth()->user()->isAdmin())
+                <a href="{{ route('customer.dashboard') }}" class="btn btn-primary">Browse Items</a>
+            @endif
         </div>
     @endif
 </div>

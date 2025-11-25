@@ -19,6 +19,8 @@ class Invoice extends Model
         'status',
         'due_date',
         'paid_date',
+        'transaction_id',
+        'payment_method',
     ];
 
     protected $casts = [
