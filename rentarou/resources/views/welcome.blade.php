@@ -242,26 +242,26 @@
                     </h3>
                     <p style="opacity: 0.7;">The complete inventory and rental management solution for modern businesses.</p>
                     <div class="social-links mt-4">
-                        <a href="#"><i class="bi bi-facebook"></i></a>
-                        <a href="#"><i class="bi bi-twitter"></i></a>
-                        <a href="#"><i class="bi bi-instagram"></i></a>
-                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                        <a href="mailto:support@rentarou.com" title="Contact Us"><i class="bi bi-envelope-fill"></i></a>
+                        <a href="tel:+15551234567" title="Call Us"><i class="bi bi-phone-fill"></i></a>
+                        <a href="#contact" title="Get in Touch"><i class="bi bi-chat-dots-fill"></i></a>
+                        <a href="{{ route('items.index') }}" title="Browse Items"><i class="bi bi-box-seam-fill"></i></a>
                     </div>
                 </div>
                 
                 <div class="col-md-2 mb-4">
                     <h4 class="footer-title">Product</h4>
                     <a href="#features" class="footer-link">Features</a>
-                    <a href="#" class="footer-link">Pricing</a>
+                    <a href="{{ route('customer.dashboard') }}" class="footer-link">Dashboard</a>
                     <a href="#how-it-works" class="footer-link">How It Works</a>
-                    <a href="#" class="footer-link">FAQ</a>
+                    <a href="mailto:support@rentarou.com?subject=FAQ" class="footer-link">FAQ</a>
                 </div>
                 
                 <div class="col-md-2 mb-4">
                     <h4 class="footer-title">Company</h4>
-                    <a href="#" class="footer-link">About Us</a>
-                    <a href="#" class="footer-link">Careers</a>
-                    <a href="#" class="footer-link">Blog</a>
+                    <a href="#contact" class="footer-link">About Us</a>
+                    <a href="mailto:careers@rentarou.com" class="footer-link">Careers</a>
+                    <a href="#features" class="footer-link">News</a>
                     <a href="#contact" class="footer-link">Contact</a>
                 </div>
                 
@@ -276,7 +276,7 @@
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2024 Rentarou. All rights reserved. | <a href="#" class="footer-link d-inline">Privacy Policy</a> | <a href="#" class="footer-link d-inline">Terms of Service</a></p>
+                <p>&copy; 2024 Rentarou. All rights reserved. | <a href="mailto:legal@rentarou.com?subject=Privacy Policy" class="footer-link d-inline">Privacy Policy</a> | <a href="mailto:legal@rentarou.com?subject=Terms of Service" class="footer-link d-inline">Terms of Service</a></p>
             </div>
         </div>
     </footer>

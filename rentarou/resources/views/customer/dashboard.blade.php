@@ -470,12 +470,12 @@
                     </a>
                 </div>
                 <div class="col-md-4">
-                    <a href="{{ route('invoices.index') }}" class="btn btn-outline-success w-100">
+                    <a href="#" class="btn btn-outline-success w-100">
                         <i class="bi bi-receipt"></i> My Invoices
                     </a>
                 </div>
                 <div class="col-md-4">
-                    <a href="#" class="btn btn-outline-info w-100">
+                    <a href="mailto:support@rentarou.com?subject=Customer Support Request" class="btn btn-outline-info w-100">
                         <i class="bi bi-question-circle"></i> Help & Support
                     </a>
                 </div>
