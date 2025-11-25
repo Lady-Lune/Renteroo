@@ -34,6 +34,11 @@
         opacity: 0.9;
     }
 
+    .quick-action-btn {
+        flex: 1 1 20%;
+        min-width: 150px;
+    }
+
     .item-card {
         background: white;
         border-radius: 15px;
@@ -130,6 +135,29 @@
         opacity: 0.3;
         margin-bottom: 1rem;
     }
+
+    .quick-actions-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .quick-actions-row > div {
+        flex: 1 1 calc(20% - 0.8rem);
+        min-width: 140px;
+    }
+
+    @media (max-width: 1200px) {
+        .quick-actions-row > div {
+            flex: 1 1 calc(25% - 0.75rem);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .quick-actions-row > div {
+            flex: 1 1 calc(50% - 0.5rem);
+        }
+    }
 </style>
 
 <!-- Hero Section -->
@@ -181,26 +209,32 @@
         <h3 class="section-title">
             <i class="bi bi-lightning-charge"></i> Quick Actions
         </h3>
-        <div class="row g-3">
-            <div class="col-lg-3 col-md-4 col-6">
+        <div class="quick-actions-row">
+            <div>
                 <a href="{{ route('admin.items.create') }}" class="btn btn-primary w-100 d-flex flex-column align-items-center py-3">
                     <i class="bi bi-plus-circle mb-2" style="font-size: 2rem;"></i>
                     <span>Add New Item</span>
                 </a>
             </div>
-            <div class="col-lg-3 col-md-4 col-6">
+            <div>
                 <a href="{{ route('admin.rentals.create') }}" class="btn btn-success w-100 d-flex flex-column align-items-center py-3">
                     <i class="bi bi-calendar-plus mb-2" style="font-size: 2rem;"></i>
                     <span>New Rental</span>
                 </a>
             </div>
-            <div class="col-lg-3 col-md-4 col-6">
-                <a href="{{ route('admin.items.index') }}" class="btn btn-info w-100 d-flex flex-column align-items-center py-3">
+            <div>
+                <a href="{{ route('admin.rentals.index') }}" class="btn btn-info w-100 d-flex flex-column align-items-center py-3">
                     <i class="bi bi-list-ul mb-2" style="font-size: 2rem;"></i>
-                    <span>All Items</span>
+                    <span>All Rentals</span>
                 </a>
             </div>
-            <div class="col-lg-3 col-md-4 col-6">
+            <div>
+                <a href="{{ route('invoices.index') }}" class="btn btn-warning w-100 d-flex flex-column align-items-center py-3">
+                    <i class="bi bi-receipt mb-2" style="font-size: 2rem;"></i>
+                    <span>Invoices</span>
+                </a>
+            </div>
+            <div>
                 <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary w-100 d-flex flex-column align-items-center py-3">
                     <i class="bi bi-tags mb-2" style="font-size: 2rem;"></i>
                     <span>Categories</span>

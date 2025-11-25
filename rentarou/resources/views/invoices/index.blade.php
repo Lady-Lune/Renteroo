@@ -70,7 +70,13 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container py-4">
+    <div class="mb-3">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
     @if($invoices->count() > 0)
         <div class="row">
             @foreach($invoices as $invoice)

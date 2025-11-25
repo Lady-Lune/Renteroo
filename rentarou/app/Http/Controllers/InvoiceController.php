@@ -9,14 +9,20 @@ class InvoiceController extends Controller
 {
     /**
      * List invoices for authenticated user
-     * Customers see only their invoices; admins see all
+     * Customers see only their invoices; admins see invoices for items they own
      */
     public function index()
     {
         $user = auth()->user();
         
         if ($user->isAdmin()) {
+            // Admin sees only invoices for rentals of items they own
             $invoices = Invoice::with('rental.user', 'rental.item')
+                ->whereHas('rental', function ($query) {
+                    $query->whereHas('item', function ($itemQuery) {
+                        $itemQuery->where('user_id', auth()->id());
+                    });
+                })
                 ->orderBy('created_at', 'desc')
                 ->paginate(15);
         } else {

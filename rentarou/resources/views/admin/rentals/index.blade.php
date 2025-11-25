@@ -36,9 +36,14 @@
             <h2><i class="bi bi-calendar-check"></i> Rentals Management</h2>
             <p class="text-muted mb-0">Manage all rental bookings</p>
         </div>
-        <a href="{{ route('admin.rentals.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Create New Rental
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+            <a href="{{ route('admin.rentals.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New Rental
+            </a>
+        </div>
     </div>
 
     @if(session('success'))
@@ -132,7 +137,7 @@
         @endforeach
 
         <div class="mt-4">
-            {{ $rentals->links('custom-pagination') }}
+            {{ $rentals->custom-pagination') }}
         </div>
     @else
         <div class="text-center py-5">

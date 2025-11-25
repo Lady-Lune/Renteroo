@@ -114,8 +114,8 @@
 <div class="container py-5">
     <div class="row mb-4">
         <div class="col-md-8">
-            <a href="{{ route('invoices.index') }}" class="text-decoration-none">
-                <i class="bi bi-arrow-left"></i> Back to Invoices
+            <a href="javascript:history.back()" class="text-decoration-none">
+                <i class="bi bi-arrow-left"></i> Back
             </a>
         </div>
     </div>
