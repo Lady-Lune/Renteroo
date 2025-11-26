@@ -38,9 +38,14 @@
             </h2>
             <p class="text-muted mb-0">Manage item categories</p>
         </div>
-        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Add New Category
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New Category
+            </a>
+        </div>
     </div>
 
     <!-- Success/Error Messages -->
@@ -92,7 +97,7 @@
         </div>
 
         <div class="mt-4">
-            {{ $categories->links() }}
+            {{ $categories->links('custom-pagination') }}
         </div>
     @else
         <div class="text-center py-5">

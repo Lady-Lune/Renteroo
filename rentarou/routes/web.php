@@ -64,9 +64,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
      Route::post('/rentals/quick-register', [App\Http\Controllers\Admin\RentalController::class, 'quickRegister'])->name('rentals.quickRegister');
      
-     // PDF Invoice for rentals
-     Route::get('/rentals/{rental}/invoice', [App\Http\Controllers\Admin\RentalController::class, 'downloadInvoice'])
-         ->name('rentals.invoice');
+     // Invoice via rentals (deprecated - redirect to invoices portal)
+     Route::get('/rentals/{rental}/invoice', function (App\Models\Rental $rental) {
+         return redirect()->route('invoices.download', $rental->invoice_id ?? 0);
+     })->name('admin.rentals.invoice');
 
      // Cancel rental
      Route::patch('/rentals/{rental}/cancel', [App\Http\Controllers\Admin\RentalController::class, 'cancel'])
@@ -92,7 +93,15 @@ Route::middleware(['auth', 'customer'])->prefix('customer')->name('customer.')->
     // Rentals
     Route::get('/rentals', [App\Http\Controllers\Customer\RentalController::class, 'index'])->name('rentals.index');
     Route::get('/rentals/{rental}', [App\Http\Controllers\Customer\RentalController::class, 'show'])->name('rentals.show');
-    Route::get('/rentals/{rental}/download-invoice', [App\Http\Controllers\Customer\RentalController::class, 'downloadInvoice'])->name('rentals.download-invoice');
+    
+    // Invoice download (deprecated - redirect to invoices portal)
+    Route::get('/rentals/{rental}/download-invoice', function (App\Models\Rental $rental) {
+        // Authorization check
+        if ($rental->user_id !== auth()->id()) {
+            abort(403);
+        }
+        return redirect()->route('invoices.download', $rental->invoice_id ?? 0);
+    })->name('rentals.download-invoice');
 
     Route::post('/rentals', [App\Http\Controllers\Customer\RentalController::class, 'store'])
     ->name('rentals.store');
@@ -130,11 +139,8 @@ Route::get('/items/{id}', [App\Http\Controllers\ItemController::class, 'show'])-
 */
 
 Route::middleware('auth')->prefix('invoices')->name('invoices.')->group(function () {
-    Route::get('/', function () {
-        return '<h1>My Invoices</h1><p>Your invoice history.</p>';
-    })->name('index');
-    
-    Route::get('/{id}', function ($id) {
-        return '<h1>Invoice #' . $id . '</h1>';
-    })->name('show');
+    Route::get('/', [App\Http\Controllers\InvoiceController::class, 'index'])->name('index');
+    Route::get('/{invoice}', [App\Http\Controllers\InvoiceController::class, 'show'])->name('show');
+    Route::get('/{invoice}/download', [App\Http\Controllers\InvoiceController::class, 'download'])->name('download');
+    Route::post('/{invoice}/mark-paid', [App\Http\Controllers\InvoiceController::class, 'markPaid'])->middleware('admin')->name('mark-paid');
 });

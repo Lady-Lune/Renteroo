@@ -51,7 +51,7 @@
     </div>
 
     <div class="mt-4">
-        {{ $items->links() }}
+        {{ $items->links('custom-pagination') }}
     </div>
 </div>
 @endsection

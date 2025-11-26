@@ -198,6 +198,80 @@
         opacity: 0.3;
         margin-bottom: 1rem;
     }
+
+    .quick-actions-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .quick-actions-row > div {
+        flex: 1 1 calc(33.333% - 0.66rem);
+        min-width: 140px;
+    }
+
+    @media (max-width: 1200px) {
+        .quick-actions-row > div {
+            flex: 1 1 calc(50% - 0.5rem);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .quick-actions-row > div {
+            flex: 1 1 calc(50% - 0.5rem);
+        }
+    }
+
+    /* Pagination Fixes - Clean Approach */
+    .items-section .pagination-container {
+        font-size: 0.875rem;
+        isolation: isolate; /* Create new stacking context */
+    }
+    
+    .items-section .pagination-container .pagination {
+        margin: 0;
+        justify-content: center;
+        font-size: inherit;
+    }
+
+    .items-section .pagination-container .pagination .page-item .page-link {
+        color: #667eea;
+        border: 1px solid #dee2e6;
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+        line-height: 1.25;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .items-section .pagination-container .pagination .page-item .page-link:hover {
+        color: white;
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+
+    .items-section .pagination-container .pagination .page-item.active .page-link {
+        background-color: #667eea;
+        border-color: #667eea;
+        color: white;
+    }
+
+    /* Target Bootstrap Icons specifically in pagination */
+    .items-section .pagination-container .pagination .page-link i,
+    .items-section .pagination-container .pagination .page-link .bi {
+        font-size: 0.75rem;
+        width: auto;
+        height: auto;
+    }
+
+    /* Reset any inherited large font sizes */
+    .items-section .pagination-container .pagination .page-link svg {
+        width: 1rem;
+        height: 1rem;
+    }
 </style>
 
 <!-- Hero Section -->
@@ -314,6 +388,27 @@
         </div>
     @endif
 
+     <!-- Quick Actions -->
+    <div class="card mb-4" style="border-radius: 15px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <div class="card-body p-4">
+            <h5 class="mb-3"><i class="bi bi-lightning-charge"></i> Quick Actions</h5>
+            <div class="quick-actions-row">
+                <div>
+                    <a href="{{ route('customer.rentals.index') }}" class="btn btn-primary w-100 d-flex flex-column align-items-center py-3">
+                        <i class="bi bi-list-ul mb-2" style="font-size: 2rem;"></i>
+                        <span>View All Rentals</span>
+                    </a>
+                </div>
+                <div>
+                    <a href="mailto:support@rentarou.com?subject=Customer Support Request" class="btn btn-info w-100 d-flex flex-column align-items-center py-3">
+                        <i class="bi bi-question-circle mb-2" style="font-size: 2rem;"></i>
+                        <span>Help & Support</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Search & Filter Section -->
     <div class="search-section">
         <form method="GET" action="{{ route('customer.dashboard') }}">
@@ -350,7 +445,7 @@
     </div>
 
     <!-- Available Items Section -->
-    <div class="mb-5">
+    <div class="mb-5 items-section">
         <h2 class="section-title">
             <i class="bi bi-box-seam"></i> Available Items to Rent
         </h2>
@@ -394,7 +489,9 @@
 
             <!-- Pagination -->
             <div class="mt-4">
-                {{ $availableItems->links() }}
+                <div class="pagination-container">
+                    {{ $availableItems->links('custom-pagination') }}
+                </div>
             </div>
         @else
             <div class="empty-state">
@@ -404,30 +501,6 @@
                 <a href="{{ route('customer.dashboard') }}" class="btn btn-primary">Clear Filters</a>
             </div>
         @endif
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="card mb-4" style="border-radius: 15px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-        <div class="card-body p-4">
-            <h5 class="mb-3"><i class="bi bi-lightning-charge"></i> Quick Actions</h5>
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <a href="{{ route('customer.rentals.index') }}" class="btn btn-outline-primary w-100">
-                        <i class="bi bi-list-ul"></i> View All My Rentals
-                    </a>
-                </div>
-                <div class="col-md-4">
-                    <a href="{{ route('invoices.index') }}" class="btn btn-outline-success w-100">
-                        <i class="bi bi-receipt"></i> My Invoices
-                    </a>
-                </div>
-                <div class="col-md-4">
-                    <a href="#" class="btn btn-outline-info w-100">
-                        <i class="bi bi-question-circle"></i> Help & Support
-                    </a>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

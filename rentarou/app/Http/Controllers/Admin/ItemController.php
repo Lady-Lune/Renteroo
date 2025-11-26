@@ -31,9 +31,14 @@ class ItemController extends Controller
         ->latest()
         ->paginate(12);
 
+    // Also get rentals for the admin's items (for display purposes if the view needs it)
+    $rentals = \App\Models\Rental::whereHas('item', function($query) {
+        $query->where('user_id', auth()->id());
+    })->get();
+
     $categories = Category::all();
 
-    return view('admin.items.index', compact('items', 'categories', 'search', 'category'));
+    return view('admin.items.index', compact('items', 'categories', 'search', 'category', 'rentals'));
 }
     /**
      * Show the form for creating a new item
