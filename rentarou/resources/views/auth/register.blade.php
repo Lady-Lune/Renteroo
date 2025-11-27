@@ -129,7 +129,7 @@
                     </div>
                 </div>
 
-                <!-- Role Selection -->
+                <!-- Role Selection
                 <div class="role-selection">
                     <label class="form-label">
                         <i class="bi bi-person-badge"></i> I want to register as:
@@ -155,7 +155,7 @@
                     @error('role')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                </div>
+                </div> -->
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary">

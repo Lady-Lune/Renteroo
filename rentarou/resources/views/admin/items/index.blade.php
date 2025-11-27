@@ -96,10 +96,14 @@
             <button onclick="history.back()" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Back
             </button>
+            <button onclick="window.location.href='{{ route('admin.dashboard') }}'" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </button>
             <a href="{{ route('admin.items.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Add Item
             </a>
         </div>
+        
     </div>
 
     @if(session('success'))
